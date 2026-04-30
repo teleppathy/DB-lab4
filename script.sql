@@ -89,10 +89,7 @@ LEFT JOIN film_actor AS fa
     ON a.actor_id = fa.actor_id
 GROUP BY a.actor_id, a.first_name, a.last_name;
 
-
--- ==========================================
 -- Grouping
--- ==========================================
 
 -- 1. Get the number of films per release year
 SELECT
@@ -137,9 +134,8 @@ GROUP BY f.title
 ORDER BY actor_count DESC;
 
 
--- ==========================================
 -- Groups filtering
--- ==========================================
+
 
 -- 1. Filter customers who have at least one failed payment
 SELECT
@@ -194,7 +190,55 @@ JOIN film_genre AS fg
 GROUP BY f.title
 HAVING COUNT(fg.genre_id) = 1;
 
--- ==========================================
 -- Multi-table aggregation 
--- (Місце для твоїх майбутніх запитів)
--- ==========================================
+
+-- 1. Calculate total revenue from subscriptions
+SELECT
+    s.type,
+    SUM(p.amount) AS total_revenue
+FROM subscription AS s
+JOIN payment AS p
+    ON s.subscription_id = p.subscription_id
+WHERE p.status = TRUE
+GROUP BY s.type
+ORDER BY total_revenue DESC;
+
+-- 2. Count films and average release year per director
+SELECT
+    d.first_name,
+    d.last_name,
+    COUNT(fd.film_id) AS film_count,
+    ROUND(AVG(f.release_year), 0) AS avg_year
+FROM director AS d
+JOIN film_director AS fd
+    ON d.director_id = fd.director_id
+JOIN film AS f
+    ON fd.film_id = f.film_id
+GROUP BY d.director_id, d.first_name, d.last_name;
+
+-- 3. Count number of films per genre
+SELECT
+    g.name,
+    COUNT(fg.film_id) AS film_count
+FROM genre AS g
+LEFT JOIN film_genre AS fg
+    ON g.genre_id = fg.genre_id
+GROUP BY g.name;
+
+-- 4. Calculate total refunded amount
+SELECT
+    SUM(p.amount) AS total_failed_amount
+FROM payment AS p
+WHERE p.status = FALSE;
+
+-- 5. Top 5 actors by number of films
+SELECT
+    a.first_name,
+    a.last_name,
+    COUNT(fa.film_id) AS movies_count
+FROM actor AS a
+JOIN film_actor AS fa
+    ON a.actor_id = fa.actor_id
+GROUP BY a.actor_id, a.first_name, a.last_name
+ORDER BY movies_count DESC
+LIMIT 5;
