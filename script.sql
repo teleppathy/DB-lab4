@@ -1,6 +1,4 @@
--- ==========================================
 -- JOIN queries
--- ==========================================
 
 -- 1. Select customers with their subscriptions
 SELECT
@@ -51,10 +49,7 @@ FROM customer AS c
 LEFT JOIN payment AS p
     ON c.customer_id = p.customer_id;
 
-
--- ==========================================
 -- Base aggregation
--- ==========================================
 
 -- 1. Select total sum of payments for each customer
 SELECT
